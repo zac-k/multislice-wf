@@ -1,0 +1,110 @@
+#
+# makefile to generate TEMSIM multislice package with 32 bit minGW under MS winndows.
+#
+# Put this file in the same directory as the TEMSIM
+# C/C++ source files and type "make all" from a command line,
+# to compile all of the programs.
+#
+#  type "make all" to compile everthing
+#  type "make remove" to remove all of the compiled files.
+#
+# Each file name is assumed to be all lower case.
+#
+# last modified 8-feb-2006 ejk
+# add autostem with openMP 5-nov-2008 ejk
+# convert to fftw  1-jan-2011 ejk
+# start conversion to C++ 21-apr-2012 ejk
+#
+
+# define libraries
+LIBS =  slicelib.o floatTIFF.o
+WLIBS = slicelib.o floatTIFF.o libfftw3f-3.dll  # mingw32 and FFTW
+
+# for 32 bit mingw 
+CC = gcc -O
+CPP = g++ -O2
+DEL = del  # windows/mingw - doesn't work without .exe in file name
+
+# for 64 bit mingw :  doesn't work - can't find omp.h
+#CC = x86_64-w64-mingw32-gcc -O
+#WLIBS = slicelib.o tiffsubs.o libfftw3f-3.dll -lm  # mingw64
+#DEL = del  # windows/mingw - doesn't work without .exe in file name
+
+#  for linux
+#CC = gcc -O
+#DEL = rm  # unix
+#WLIBS = slicelib.o tiffsubs.o -lfftw3f -lm  # linux
+
+#
+#  entry point to build everything
+#
+all:
+	make atompot
+	make autoslic
+	make autostem
+	make display
+	make image
+	make mulslice
+	make probe
+	make slicview
+	make stemslic
+	make sumpix
+
+#
+#  entry point to remove compiled files
+#
+remove:
+	${DEL}$ atompot.exe
+	${DEL}$ autoslic.exe
+	${DEL}$ autostem.exe
+	${DEL}$ display.exe
+	${DEL}$ image.exe
+	${DEL}$ mulslice.exe
+	${DEL}$ probe.exe
+	${DEL}$ slicview.exe
+	${DEL}$ stemslic.exe
+	${DEL}$ sumpix.exe
+	${DEL}$ slicelib.o
+	${DEL}$ floatTIFF.o
+#
+#  main programs
+#
+
+atompot: atompot.cpp  ${LIBS}
+	${CPP} -o atompot atompot.cpp ${WLIBS}
+
+autoslic: autoslic.cpp  ${LIBS}
+	${CPP}  -fopenmp -o autoslic autoslic.cpp ${WLIBS}
+
+autostem: autostem.cpp  ${LIBS}
+	${CPP} -fopenmp -o autostem autostem.cpp ${WLIBS}
+
+display: display.cpp  ${LIBS}
+	${CPP} -o display display.cpp ${LIBS}
+
+image: image.cpp  ${LIBS}
+	${CPP} -o image image.cpp ${WLIBS}
+
+mulslice: mulslice.cpp ${LIBS}
+	${CPP} -o mulslice mulslice.cpp ${WLIBS}
+
+probe: probe.cpp ${LIBS}
+	${CPP} -o probe probe.cpp ${WLIBS}
+
+slicview: slicview.cpp ${LIBS}
+	${CPP} -o slicview slicview.cpp ${LIBS}
+
+stemslic: stemslic.cpp ${LIBS}
+	${CPP} -o stemslic stemslic.cpp ${WLIBS}
+
+sumpix: sumpix.cpp ${LIBS}
+	${CPP} -o sumpix sumpix.cpp ${WLIBS}
+
+#
+# define subroutine libraries
+#
+slicelib.o: slicelib.cpp
+	${CPP} -c slicelib.cpp
+
+floatTIFF.o: floatTIFF.cpp
+	${CPP} -c floatTIFF.cpp

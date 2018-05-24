@@ -1,0 +1,106 @@
+#
+# makefile to generate TEMSIM multislice package.
+# assumes that FFTW already installed (see www.fftw.org)
+#
+#  this file has been tested with Ubuntu-Linux
+#  other versions of Linux/UNIX may require modifications
+#
+# Put this file in the same directory as the TEMSIM
+# C source files and type "make all" from a command line,
+# to compile all of the programs.
+#
+#  type "make all" to compile everthing
+#  type "make remove" to remove all of the compiled files.
+#
+# Each file name is assumed to be all lower case.
+#
+# convert to C++ 29-may-2012 ejk
+# last modified 29-may-2012 ejk
+#
+
+# define compiler with optimize flag
+#CC = gcc -O
+CC = g++ -O3
+#DEL = del  # windows/mingw - doesn't work without .exe in file name
+DEL = rm  # unix
+
+# define libraries
+MYLIBS = slicelib.o floatTIFF.o 
+LIBS = ${MYLIBS}$
+WLIBS = slicelib.o floatTIFF.o -lfftw3f
+
+#
+#  entry point to build everything
+#
+all:
+	make atompot
+	make autoslic
+	make autostem
+	make display
+	make image
+	make mulslice
+	make probe
+	make slicview
+	make stemslic
+	make sumpix
+
+#
+#  entry point to remove compiled files
+#
+remove:
+	${DEL}$ atompot
+	${DEL}$ autoslic
+	${DEL}$ autostem
+	${DEL}$ display
+	${DEL}$ image
+	${DEL}$ mulslice
+	${DEL}$ probe
+	${DEL}$ slicview
+	${DEL}$ stemslic
+	${DEL}$ sumpix
+	${DEL}$ slicelib.o
+	${DEL}$ tiffsubs.o
+#
+#  main programs
+#
+
+atompot: atompot.cpp  ${MYLIBS}
+	${CC} -o atompot atompot.cpp ${WLIBS}
+
+autoslic: autoslic.cpp  ${MYLIBS}
+	${CC} -fopenmp -o autoslic autoslic.cpp ${WLIBS}
+
+autostem: autostem.cpp  ${MYLIBS}
+	${CC} -fopenmp -o autostem autostem.cpp ${WLIBS} 
+
+display: display.cpp  ${MYLIBS}
+	${CC} -o display display.cpp ${LIBS}
+
+image: image.cpp  ${MYLIBS}
+	${CC} -o image image.cpp ${WLIBS}
+
+mulslice: mulslice.cpp ${MYLIBS}
+	${CC} -o mulslice mulslice.cpp ${MYLIBS} -lfftw3f_threads -lfftw3f
+
+probe: probe.cpp ${MYLIBS}
+	${CC} -o probe probe.cpp ${WLIBS}
+
+slicview: slicview.cpp ${MYLIBS}
+	${CC} -o slicview slicview.cpp ${LIBS}
+
+stemslic: stemslic.cpp ${MYLIBS}
+	${CC} -o stemslic stemslic.cpp ${MYLIBS}$ -lfftw3f_threads -lfftw3f
+
+sumpix: sumpix.cpp ${MYLIBS}
+	${CC} -o sumpix sumpix.cpp ${WLIBS}
+
+#
+# define subroutine library
+#
+
+slicelib.o: slicelib.cpp
+	${CC} -c slicelib.cpp
+
+floatTIFF.o: floatTIFF.cpp
+	${CC} -c floatTIFF.cpp
+
