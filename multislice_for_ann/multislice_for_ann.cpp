@@ -22,8 +22,8 @@ int main()
 		system("pause");
 		return 0;
 	}
-	string sample_path = ".\\training4\\";//"C:\\Users\\zac\\PycharmProjects\\phaseRetDL\\data\\specimens\\training4\\";
-	string output_path = ".\\images\\";// C:\\Users\\zac\\PycharmProjects\\phaseRetDL\\data\\images\\multislice\\";
+	string sample_path = ".\\training4\\";
+	string output_path = ".\\images\\";
 	int Mhr = 1024;
 	int M = 1024;
 	int spec_size = 64; // Size of specimen in pixels
